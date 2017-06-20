@@ -1,3 +1,5 @@
+from random import randint
+
 class Hangman():
 	
 	def __init__(self):
@@ -5,7 +7,7 @@ class Hangman():
 		choice = raw_input("->")
 
 		if choice == '1':
-			print "Let's begin!"
+			print "Let's begin!\n"
 			self.rules()
 			self.beginGame()
 
@@ -21,6 +23,13 @@ class Hangman():
 		print "Rules:\n"
 		print "Guess the right word by guessing the letters."
 		print "6 wrong guesses and the game is over.\n\n"
+
+	def beginGame(self):
+		file = open("words.txt", "r")
+		words = file.readlines()
+		file.close()
+		word = list(words[randint(0, len(words) - 1)])
+		del word[-1]
 
 			
 
