@@ -20,7 +20,8 @@ class Hangman():
 	def rules(self):
 		print "Rules:\n"
 		print "Guess the right word by guessing the letters."
-		print "6 wrong guesses and the game is over."
+		print "6 wrong guesses and the game is over.\n\n"
+
 			
 
 game = Hangman()
