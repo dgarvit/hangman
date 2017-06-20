@@ -25,6 +25,7 @@ class Hangman():
 		print "Rules:\n"
 		print "Guess the right word by guessing the letters."
 		print "6 wrong guesses and the game is over.\n\n"
+		raw_input()
 
 
 	def beginGame(self):
@@ -32,7 +33,8 @@ class Hangman():
 		words = file.readlines()
 		file.close()
 		word = list(words[randint(0, len(words) - 1)])
-		del word[-1]
+		if word[-1] == '\n':
+			del word[-1]
 		return word
 
 
@@ -44,6 +46,9 @@ class Hangman():
 			else:
 				s+='?'
 		print "Word guessed so far: ", s
+		if '?' in s:
+			return False
+		return True
 
 
 	def core(self, word):
@@ -53,7 +58,9 @@ class Hangman():
 		while wrong_guesses < 6:
 			print "Guess a letter"
 			print "Letters used so far: ", letters_used
-			self.guessed(word, letters_used)
+			if self.guessed(word, letters_used):
+				print "\n\nYou guessed it right! The word is:", ''.join(word)
+				self.playAgain()
 			a = raw_input('->')
 
 			if len(a) > 1 or not a.isalpha():
@@ -65,10 +72,28 @@ class Hangman():
 			else:
 				letters_used.append(a)
 				if a in word:
-					print "Well guessed!"
+					print "Well guessed!\n"
 				else:
 					wrong_guesses += 1
-					print 6-wrong_guesses, "more wrong guesses and the man will be hanged!"
+					if wrong_guesses == 6:
+						print "\n\nSo mean of you, you let the man hang! The word is:", ''.join(word)
+						self.playAgain()
+
+					print 6-wrong_guesses, "more wrong guesses and the man will be hanged!\n"
+			raw_input()
+
+
+	def playAgain(self):		
+		print "\nWanna play again? Press (1). Press any other key to exit."
+		a = raw_input('->')
+		print "\n"
+		if a == '1':
+			word = self.beginGame()
+			self.core(word)
+
+		else:
+			print "\n\nHave a nice day!"
+			exit()
 
 			
 
