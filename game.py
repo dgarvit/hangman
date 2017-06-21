@@ -32,7 +32,7 @@ class Hangman():
 		file = open("words.txt", "r")
 		words = file.readlines()
 		file.close()
-		word = list(words[randint(0, len(words) - 1)])
+		word = list(words[randint(0, len(words) - 1)].lower())
 		if word[-1] == '\n':
 			del word[-1]
 		return word
@@ -61,7 +61,7 @@ class Hangman():
 			if self.guessed(word, letters_used):
 				print "\n\nYou guessed it right! The word is:", ''.join(word)
 				self.playAgain()
-			a = raw_input('->')
+			a = raw_input('->').lower()
 
 			if len(a) > 1 or not a.isalpha():
 				print "Invalid input.\n"
