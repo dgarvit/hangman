@@ -58,11 +58,12 @@ private:
 	char* word;
 	linked_list words;
 	void getWord();
+	int guessed(linked_list);
 
 public:
 	Hangman();
 	void rules();
-	char* beginGame();
+	void beginGame();
 };
 
 void Hangman::getWord() {
@@ -92,8 +93,7 @@ Hangman::Hangman() {
 		case '1':
 			cout << "Let's begin!\n";
 			rules();
-			getWord();
-			cout << " \n\n" << word << "\n\n";
+			beginGame();
 			break;
 
 		case '2':
@@ -108,8 +108,13 @@ void Hangman::rules() {
 	cout << "6 wrong guesses and the game is over.\n\n";
 }
 
-char* Hangman::beginGame() {
+void Hangman::beginGame() {
+	getWord();
+	
+}
 
+int Hangman::guessed(linked_list letters_used) {
+	
 }
 
 int main()
