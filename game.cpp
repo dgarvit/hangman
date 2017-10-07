@@ -70,8 +70,9 @@ private:
 	linked_list words;
 	void getWord();
 	void letters_used_so_far();
-	int letters_used_contains(char);
+	int contains(char*, char);
 	int guessed();
+	char* temp_string(char);
 
 public:
 	Hangman();
@@ -102,10 +103,10 @@ void Hangman::letters_used_so_far() {
 		cout << letters_used[i] << ", ";
 }
 
-int Hangman::letters_used_contains(char ch) {
-	int len = strlen(letters_used);
+int Hangman::contains(char x[], char ch) {
+	int len = strlen(x);
 	for (int i = 0; i < len; i++)
-		if (letters_used[i] == ch)
+		if (x[i] == ch)
 			return 1;
 
 	return 0;
@@ -143,12 +144,12 @@ void Hangman::beginGame() {
 	strcpy(letters_used, "");
 
 	while (wrong_guesses < 6) {
-		cout << "Guess a letter\n\n";
+		cout << "\nGuess a letter\n";
 		cout << "Letters used so far: "; letters_used_so_far();
-		cout << endl << endl;
 		if (guessed()) {
 			cout << "\n\n";
 			cout << "You guessed it right! The word is: " << word << endl << endl;
+			break;
 		}
 
 		cout << "->";
@@ -159,20 +160,68 @@ void Hangman::beginGame() {
 			cout << "\n\nInvalid input." << endl;
 		}
 
-		else if (letters_used_contains(tolower(a))) {
+		else if (contains(letters_used, tolower(a))) {
 			cout << "\nThe letter has already been used!" << endl;
 		}
 
 		else {
 			char temp[2];
-			temp[0] = a;
+			temp[0] = tolower(a);
 			temp[1] = '\0';
 			strcat(letters_used, temp);
+			if (contains(word, tolower(a)))
+				cout << "\nWell guessed!" << endl;
+			else {
+				wrong_guesses++;
+				if (wrong_guesses == 6) {
+					cout << "You made 6 wrong guesses! GAME OVER." << endl;
+					cout << "The word is: " << word << endl << endl;
+					break;
+				}
+
+				cout << "\nWrong Guess! ";
+				cout << (6 - wrong_guesses) << " more wrong guesses left!" << endl;
+			}
 		}
+	}
+
+	cout << "Want to play again? (y/[n])\n";
+	char ch;
+	cin >> ch;
+	
+	if (tolower(ch) == 'y')
+		beginGame();
+	else {
+		cout << "Have a nice day!";
+		exit(0);
 	}
 }
 
 int Hangman::guessed() {
+	int m = strlen(letters_used);
+	int n = strlen(word);
+	int len = 0;
+
+	char string[100];
+	strcpy(string, "");
+
+	for (int i = 0; i < n; i++) {
+		if (contains(letters_used, word[i])) {
+			len++;
+			char temp[2];
+			temp[0] = word[i];
+			temp[1] = '\0';
+			strcat(string, temp); 
+		}
+		else {
+			strcat(string, "?");
+		}
+	}
+
+	if (len == n)
+		return 1;
+
+	cout << "\nWord guessed so far: " << string << endl;
 	return 0;
 }
 
