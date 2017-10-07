@@ -5,12 +5,12 @@ using namespace std;
 class linked_list
 {
 private:
-	struct node {
+	struct node {		// a node of linked list data
 		char data[100];
 		node* next;
 	};
 
-	node* head;
+	node* head; 		// linked list head pointer
 
 	int size;
 
@@ -20,7 +20,7 @@ public:
 		head = NULL;
 	}
 
-	void push(char x[]) {
+	void push(char x[]) {		// function to push data to linked list
 		node* temp = new node;
 		strcpy(temp->data, x);
 		temp -> next = head;
@@ -28,7 +28,7 @@ public:
 		size++;
 	}
 
-	void show() {
+	void show() {				// function to print all list data
 		node* temp = head;
 		while (temp!=NULL) {
 			cout << temp -> data << "\n";
@@ -36,11 +36,11 @@ public:
 		}
 	}
 
-	int getSize() {
+	int getSize() {				// function to get the size of list
 		return size;
 	}
 
-	char* get(int idx) {
+	char* get(int idx) {		// function to get an element by index from the list
 		node* temp = head;
 		int i = 0;
 		while (temp!=NULL && i < idx) {
@@ -49,16 +49,6 @@ public:
 		}
 
 		return temp->data;
-	}
-
-	int contains(char x[]) {
-		node* temp = head;
-		while (temp!=NULL) {
-			if (!strcmp(temp -> data, x))
-				return 1;
-			temp = temp -> next;
-		}
-		return 0;
 	}
 };
 
@@ -80,7 +70,7 @@ public:
 	void beginGame();
 };
 
-void Hangman::getWord() {
+void Hangman::getWord() {		// get a random word from the text file
 	int size = words.getSize();
 	if (words.getSize() == 0) {
 		ifstream fin("words.txt", ios::in);
@@ -97,13 +87,13 @@ void Hangman::getWord() {
 	word = words.get(x);
 }
 
-void Hangman::letters_used_so_far() {
+void Hangman::letters_used_so_far() {	// print letters used so far
 	int len = strlen(letters_used);
 	for (int i = 0; i < len; i++)
 		cout << letters_used[i] << ", ";
 }
 
-int Hangman::contains(char x[], char ch) {
+int Hangman::contains(char x[], char ch) {	// check if a given string contains a given letter
 	int len = strlen(x);
 	for (int i = 0; i < len; i++)
 		if (x[i] == ch)
@@ -112,7 +102,7 @@ int Hangman::contains(char x[], char ch) {
 	return 0;
 }
 
-Hangman::Hangman() {
+Hangman::Hangman() {	// constructor
 	cout << "Welcome! Press (1) to begin the game, press (2) to exit.";
 	cout << "\n->";
 	char choice;
@@ -131,13 +121,13 @@ Hangman::Hangman() {
 	}
 }
 
-void Hangman::rules() {
+void Hangman::rules() {		// game rules
 	cout << "Rules:\n";
 	cout << "Guess the right word by guessing the letters.\n";
 	cout << "6 wrong guesses and the game is over.\n\n";
 }
 
-void Hangman::beginGame() {
+void Hangman::beginGame() {		// game handler
 	getWord();
 	int wrong_guesses = 0;
 	letters_used = new char[26];
@@ -190,19 +180,19 @@ void Hangman::beginGame() {
 	cin >> ch;
 	
 	if (tolower(ch) == 'y')
-		beginGame();
+		beginGame();		// play again
 	else {
 		cout << "Have a nice day!";
 		exit(0);
 	}
 }
 
-int Hangman::guessed() {
+int Hangman::guessed() {	// check if the word has been correctly guessed
 	int m = strlen(letters_used);
 	int n = strlen(word);
 	int len = 0;
 
-	char string[100];
+	char string[100];		// word guessed so far
 	strcpy(string, "");
 
 	for (int i = 0; i < n; i++) {
