@@ -50,15 +50,28 @@ public:
 
 		return temp->data;
 	}
+
+	int contains(char x[]) {
+		node* temp = head;
+		while (temp!=NULL) {
+			if (!strcmp(temp -> data, x))
+				return 1;
+			temp = temp -> next;
+		}
+		return 0;
+	}
 };
 
 class Hangman
 {
 private:
 	char* word;
+	char* letters_used;
 	linked_list words;
 	void getWord();
-	int guessed(linked_list);
+	void letters_used_so_far();
+	int letters_used_contains(char);
+	int guessed();
 
 public:
 	Hangman();
@@ -81,6 +94,21 @@ void Hangman::getWord() {
 	srand(time(NULL));
 	int x = rand()%size;
 	word = words.get(x);
+}
+
+void Hangman::letters_used_so_far() {
+	int len = strlen(letters_used);
+	for (int i = 0; i < len; i++)
+		cout << letters_used[i] << ", ";
+}
+
+int Hangman::letters_used_contains(char ch) {
+	int len = strlen(letters_used);
+	for (int i = 0; i < len; i++)
+		if (letters_used[i] == ch)
+			return 1;
+
+	return 0;
 }
 
 Hangman::Hangman() {
@@ -110,11 +138,42 @@ void Hangman::rules() {
 
 void Hangman::beginGame() {
 	getWord();
-	
+	int wrong_guesses = 0;
+	letters_used = new char[26];
+	strcpy(letters_used, "");
+
+	while (wrong_guesses < 6) {
+		cout << "Guess a letter\n\n";
+		cout << "Letters used so far: "; letters_used_so_far();
+		cout << endl << endl;
+		if (guessed()) {
+			cout << "\n\n";
+			cout << "You guessed it right! The word is: " << word << endl << endl;
+		}
+
+		cout << "->";
+
+		char a;
+		cin >> a;
+		if (!isalpha(a)) {
+			cout << "\n\nInvalid input." << endl;
+		}
+
+		else if (letters_used_contains(tolower(a))) {
+			cout << "\nThe letter has already been used!" << endl;
+		}
+
+		else {
+			char temp[2];
+			temp[0] = a;
+			temp[1] = '\0';
+			strcat(letters_used, temp);
+		}
+	}
 }
 
-int Hangman::guessed(linked_list letters_used) {
-	
+int Hangman::guessed() {
+	return 0;
 }
 
 int main()
