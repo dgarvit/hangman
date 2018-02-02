@@ -17,6 +17,8 @@ public:
 		loss = 0;
 	}
 
+	int create_new_user(char name[], char email[], char password[]);
+
 	void show_data() {
 		cout << name << endl;
 		cout << email << endl;
@@ -24,6 +26,30 @@ public:
 		cout << loss << endl;
 	}
 };
+
+int User::create_new_user(char name[], char email[], char password[]) {
+	ifstream fin;
+	ofstream fout;
+	fin.open("user.dat", ios::in);
+	fout.open("user.dat", ios::app);
+	User u;
+	while (!fin.eof()) {
+		fin.read((char*)&u, sizeof(u));
+		if (!strcmp(u.email, email)) {
+			fin.close();
+			fout.close();
+			return -1;					// user already exists
+		}
+	}
+	strcpy(u.name, name);
+	strcpy(u.email, email);
+	strcpy(u.password, password);
+	u.show_data();
+	fout.write((char*)&u, sizeof(u));
+	fin.close();
+	fout.close();
+	return 1;							// successfully created
+}
 
 
 class linked_list
