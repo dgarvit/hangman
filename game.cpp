@@ -3,7 +3,6 @@ using namespace std;
 
 
 int logged_in = 0;	// flag to check if user is logged in or not
-char email[50];		// logged in email
 
 class User
 {
@@ -14,6 +13,8 @@ private:
 	int win;
 	int loss;
 
+	void modify();
+
 public:
 	User() {
 		win = 0;
@@ -22,14 +23,34 @@ public:
 
 	int create_new_user(char name[], char email[], char password[]);
 	int login(char email[], char password[]);
-
-	void show_data() {
-		cout << name << endl;
-		cout << email << endl;
-		cout << win << endl;
-		cout << loss << endl;
+	void show_data(int show_name);
+	void won() {
+		win++;
+		modify();
 	}
-};
+	void lost() {
+		loss++;
+		modify();
+	}
+} user;
+
+void User::modify() {
+	fstream fil;
+	fil.open("user.dat",ios::in| ios::out|ios::binary);
+	User u;
+	fil.read((char*)&u, sizeof(u));
+	while (!fil.eof()) {
+		if (!strcmp(u.email, user.email)) {
+			fil.seekg(0,ios::cur);
+			fil.seekp(fil.tellg() - sizeof(user));
+			fil.write((char*)&(user), sizeof(user));
+			break;
+		}
+		fil.read((char*)&u, sizeof(u));
+	}
+
+	fil.close();
+}
 
 int User::create_new_user(char name[], char email[], char password[]) {
 	ifstream fin;
@@ -48,7 +69,6 @@ int User::create_new_user(char name[], char email[], char password[]) {
 	strcpy(u.name, name);
 	strcpy(u.email, email);
 	strcpy(u.password, password);
-	u.show_data();
 	fout.write((char*)&u, sizeof(u));
 	fin.close();
 	fout.close();
@@ -59,16 +79,15 @@ int User::login(char email[], char password[]) {
 	if (logged_in == 1)
 		return 1;
 	ifstream fin;
-	ofstream fout;
 	fin.open("user.dat", ios::in);
-	fout.open("user.dat", ios::app);
 	User u;
 	while (!fin.eof()) {
 		fin.read((char*)&u, sizeof(u));
 		if (!strcmp(u.email, email)) {
+			fin.close();
 			if (!strcmp(u.password, password)) {
 				logged_in = 1;
-				strcpy(::email, email);
+				user = u;
 				return 1;	// successful login
 			}
 			else
@@ -76,7 +95,20 @@ int User::login(char email[], char password[]) {
 		}
 	}
 
+	fin.close();
 	return -1;				// user does not exist
+}
+
+void User::show_data(int show_name) {
+	cout << "\n\n\n";
+	if (show_name) {
+		cout << "Name: " << name << endl;
+		cout << "Email: " << email << endl;
+	}
+	cout << "Total games played: " << win + loss << endl;
+	cout << "Wins: " << win << endl;
+	cout << "Losses: " << loss << endl;
+	cin.ignore();
 }
 
 
@@ -133,11 +165,12 @@ public:
 void login() {
 	User u;
 	while (!logged_in) {
-		cout << "\n\nEnter (1) to create new user or (2) if you are an existing user.";
-		int n;
-		cin >> n;
-		switch(n) {
-			case 1:
+		cout << "\n\nEnter (1) to login or (2) to create new user";
+		cout << "\n-> ";
+		char ch;
+		cin >> ch;
+		switch(ch) {
+			case '2':
 			{
 				char name[50], email[50], password[50];
 				cout << "\nEnter name: ";
@@ -159,7 +192,7 @@ void login() {
 				break;
 			}
 
-			case 2:
+			case '1':
 			{
 				char email[50], password[50];
 				cout << "\nEnter email: ";
@@ -170,7 +203,8 @@ void login() {
 				int status = u.login(email, password);
 				switch (status) {
 					case 1:
-						cout << "\nHi " << email << "!";
+						cout << "\nHi ";
+						user.show_data(1);
 						break;
 
 					default:
@@ -258,7 +292,7 @@ void Hangman::rules() {		// game rules
 }
 
 void Hangman::beginGame() {		// game handler
-	if (!logged_in) {
+	while (!logged_in) {
 		cout << "\n\nYou are not logged in!";
 		login();
 	}
@@ -273,6 +307,7 @@ void Hangman::beginGame() {		// game handler
 		if (guessed()) {
 			cout << "\n\n";
 			cout << "You guessed it right! The word is: " << word << endl << endl;
+			user.won();
 			break;
 		}
 
@@ -299,6 +334,7 @@ void Hangman::beginGame() {		// game handler
 				wrong_guesses++;
 				if (wrong_guesses == 6) {
 					cout << "You made 6 wrong guesses! GAME OVER." << endl;
+					user.lost();
 					cout << "The word is: " << word << endl << endl;
 					break;
 				}
@@ -309,6 +345,7 @@ void Hangman::beginGame() {		// game handler
 		}
 	}
 
+	user.show_data(0);
 	cout << "Want to play again? (y/[n])\n";
 	char ch;
 	cin >> ch;
