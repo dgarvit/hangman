@@ -2,6 +2,9 @@
 using namespace std;
 
 
+int logged_in = 0;	// flag to check if user is logged in or not
+char email[50];		// logged in email
+
 class User
 {
 private:
@@ -53,6 +56,8 @@ int User::create_new_user(char name[], char email[], char password[]) {
 }
 
 int User::login(char email[], char password[]) {
+	if (logged_in == 1)
+		return 1;
 	ifstream fin;
 	ofstream fout;
 	fin.open("user.dat", ios::in);
@@ -61,8 +66,11 @@ int User::login(char email[], char password[]) {
 	while (!fin.eof()) {
 		fin.read((char*)&u, sizeof(u));
 		if (!strcmp(u.email, email)) {
-			if (!strcmp(u.password, password))
+			if (!strcmp(u.password, password)) {
+				logged_in = 1;
+				strcpy(::email, email);
 				return 1;	// successful login
+			}
 			else
 				return 0;	// incorrect password
 		}
@@ -121,6 +129,58 @@ public:
 		return temp->data;
 	}
 };
+
+void login() {
+	User u;
+	while (!logged_in) {
+		cout << "\n\nEnter (1) to create new user or (2) if you are an existing user.";
+		int n;
+		cin >> n;
+		switch(n) {
+			case 1:
+			{
+				char name[50], email[50], password[50];
+				cout << "\nEnter name: ";
+				cin >> name;
+				cout << "\nEnter email: ";
+				cin >> email;
+				cout << "\nEnter password: ";
+				cin >> password;
+
+				int status = u.create_new_user(name, email, password);
+				switch(status) {
+					case 1:
+						cout << "\n\nUser registered successfully";
+						break;
+					default:
+						cout << "\n\nEmail already exists!";
+						break;
+				}
+				break;
+			}
+
+			case 2:
+			{
+				char email[50], password[50];
+				cout << "\nEnter email: ";
+				cin >> email;
+				cout << "\nEnter password: ";
+				cin >> password;
+
+				int status = u.login(email, password);
+				switch (status) {
+					case 1:
+						cout << "\nHi " << email << "!";
+						break;
+
+					default:
+						cout << "\n\nIncorrect email or password.";
+				}
+				break;
+			}
+		}
+	}
+}
 
 class Hangman
 {
@@ -198,6 +258,10 @@ void Hangman::rules() {		// game rules
 }
 
 void Hangman::beginGame() {		// game handler
+	if (!logged_in) {
+		cout << "\n\nYou are not logged in!";
+		login();
+	}
 	getWord();
 	int wrong_guesses = 0;
 	letters_used = new char[26];
