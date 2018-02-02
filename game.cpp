@@ -2,6 +2,30 @@
 using namespace std;
 
 
+class User
+{
+private:
+	char name[50];
+	char email[50];
+	char password[50];
+	int win;
+	int loss;
+
+public:
+	User() {
+		win = 0;
+		loss = 0;
+	}
+
+	void show_data() {
+		cout << name << endl;
+		cout << email << endl;
+		cout << win << endl;
+		cout << loss << endl;
+	}
+};
+
+
 class linked_list
 {
 private:
@@ -218,5 +242,4 @@ int Hangman::guessed() {	// check if the word has been correctly guessed
 int main()
 {
 	Hangman game;
-	
 }
