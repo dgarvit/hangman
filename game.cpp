@@ -18,6 +18,7 @@ public:
 	}
 
 	int create_new_user(char name[], char email[], char password[]);
+	int login(char email[], char password[]);
 
 	void show_data() {
 		cout << name << endl;
@@ -49,6 +50,25 @@ int User::create_new_user(char name[], char email[], char password[]) {
 	fin.close();
 	fout.close();
 	return 1;							// successfully created
+}
+
+int User::login(char email[], char password[]) {
+	ifstream fin;
+	ofstream fout;
+	fin.open("user.dat", ios::in);
+	fout.open("user.dat", ios::app);
+	User u;
+	while (!fin.eof()) {
+		fin.read((char*)&u, sizeof(u));
+		if (!strcmp(u.email, email)) {
+			if (!strcmp(u.password, password))
+				return 1;	// successful login
+			else
+				return 0;	// incorrect password
+		}
+	}
+
+	return -1;				// user does not exist
 }
 
 
